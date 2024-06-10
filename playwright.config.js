@@ -31,7 +31,7 @@ module.exports = defineConfig({
     browserName : 'firefox',
     trace: 'on',
     screenshot: 'on',
-    headless : true
+    //headless : true
   },
 
   /* Configure projects for major browsers */
