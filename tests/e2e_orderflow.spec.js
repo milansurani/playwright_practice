@@ -21,7 +21,7 @@ test.beforeEach("Navigate and Login to Site", async ({ page }) => {
   await page.waitForLoadState("networkidle");
 });
 
-test("Add Product to the cart", async ({ page }) => {
+test("Add Product to Cart and Place Order", async ({ page }) => {
   //The product user wants to add to cart
   const productName = "IPHONE 13 PRO";
   // get the list of all the products on the page
@@ -41,4 +41,38 @@ test("Add Product to the cart", async ({ page }) => {
       break;
     }
   }
+
+  // click on cart button and assert the redirection
+  await page.locator('[routerlink*=cart]').click();
+  await expect(page.getByText('My Cart')).toBeVisible();
+
+  //verify the page is loaded and item is present in the cart
+  await page.locator("div li").first().waitFor();
+  await page.locator("h3:has-text('IPHONE 13 PRO')").isVisible();
+
+  //click on checkout
+  await page.getByText("Checkout").click();
+
+
+  //select the country from the autosuggest drop down
+  await page.locator("[placeholder*='Country']").pressSequentially("Ind",{delay :100});
+
+  const countryDropdown = page.locator(".ta-results");
+  await countryDropdown.waitFor();
+
+  const options = await countryDropdown.locator("button").count();
+  console.log(options);
+
+  for (let i=0;i<options; ++i)
+    {
+      const countryName = await countryDropdown.locator("button").nth(i).textContent();
+      console.log(countryName);
+      if (countryName === " India") {
+        await countryDropdown.locator("button").nth(i).click();
+        break;
+     }
+    }
+
+    //place the order
+    await page.locator(".action__submit").click();
 });
